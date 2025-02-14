@@ -154,3 +154,26 @@ app.get('/steam/reviews',async(req,resp)=>{
         resp.status(500).json({error:"Error occur while fetching data."})
     }
 })
+
+//get games by publisher name
+
+const getGamesByPublisher=async(publisher)=>{
+const games=await Steam.find({publisher:publisher});
+return games;
+}
+
+app.get("/steam/publisher/:publisher",async(req,resp)=>{
+    try{
+        const games=await getGamesByPublisher(req.params.publisher)
+        if(games){
+            resp.send(games);
+        }
+        else{
+            resp.status(404).json({message:"Games not found."});
+        }
+
+    }
+    catch(error){
+        resp.status(500).json({error:"Error occur while fetching data."})
+    }
+})
