@@ -177,3 +177,46 @@ app.get("/steam/publisher/:publisher",async(req,resp)=>{
         resp.status(500).json({error:"Error occur while fetching data."})
     }
 })
+
+//update by id
+
+const updateDataById=async(id,data)=>{
+    const game=await Steam.findByIdAndUpdate(id,data,{new:true});
+    return game;
+}
+
+app.post("/steam/update/:id",async(req,resp)=>{
+    try{
+        const game=await updateDataById(req.params.id,req.body);
+            if(game){
+                resp.send(game);
+            }
+            else{
+                resp.status(404).json({message:"Game not found."})
+            }
+    }
+    catch(error){
+        resp.status(500).json({error:"Error occur while fetching data"})
+    }
+})
+
+const getDataByInputTitle=async(data)=>{
+    const games=await Steam.find({name:{$regex:data,$options:'i'}})
+    return games;
+}
+
+app.get("/steam/name",async(req,resp)=>{
+    try{
+        //const input=req.query.input;
+        const games=await getDataByInputTitle(req.query.input);
+        if(games.length){
+            resp.send(games);
+        }
+        else{
+            resp.status(404).json({message:"No games found"})
+        }
+    }
+    catch(error){
+        throw Error("Error occur while fetching")
+    }
+})
